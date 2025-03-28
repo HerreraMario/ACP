@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, maximum-scale=1.0, user-scalable=no, orientation=portrait">
+  <title>Portón ACP</title>
+  <link rel="icon" href="image.png" type="image/png">
+  <!-- Enlace al archivo de estilos -->
+  <link rel="stylesheet" href="styles.css">
+  <!-- Librerías externas necesarias -->
+  <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-database.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fingerprintjs2/2.1.0/fingerprint2.min.js"></script>
+</head>
+<body>
+  <div class="container">
+    <h2 id="condo-name"></h2>
+    <div id="registro-container" class="hidden">
+      <div id="registro">
+        <h1>Registro de Usuario</h1>
+        <input type="text" id="name" placeholder="Nombre" required>
+        <button id="register-button">Registrar</button>
+      </div>
+    </div>
+    <h1>Control de Portón</h1>
+    <button id="toggle-button" class="hidden" disabled>Abrir Portón</button>
+    <div id="info-text">Por favor, contacte al administrador para que lo habilite.</div>
+  </div>
+  <!-- Enlace al archivo de scripts -->
+  <script src="scripts.js"></script>
+</body>
+</html>
