@@ -24,19 +24,57 @@ const toggleButton = document.getElementById("toggle-button");
 const nameInput = document.getElementById("name");
 const registerButton = document.getElementById("register-button");
 const infoText = document.getElementById("info-text");
+const userNameDisplay = document.getElementById("user-name"); // Mostrará el nombre del usuario registrado
 let currentUser = null;
 let buttonPressed = false;
 let gateOpenedInTime = false;
 let gateTimeout = null;
 
-// Al cargar la página, verificar si el nombre está almacenado en localStorage
+// Mostrar el nombre del usuario registrado en la web
+function showUserName(name) {
+  userNameDisplay.textContent = name; // Solo muestra el nombre del usuario
+  userNameDisplay.parentElement.classList.remove("hidden"); // Mostrar el contenedor del nombre
+}
+
+// Al cargar la página, verificar si el nombre en localStorage está en Firebase y compararlo
 window.addEventListener("load", () => {
-  const storedName = localStorage.getItem("userName"); // Recuperar el nombre almacenado
+  const storedName = localStorage.getItem("userName");
   if (storedName) {
-    checkUserInDatabase(storedName); // Verificar el usuario en la base de datos
+    usersRef.child(storedName).once("value").then(snapshot => {
+      const usuario = snapshot.val();
+      if (usuario) {
+        if (usuario.nombre === storedName) {
+          showUserName(storedName); // Mostrar el nombre en la interfaz
+          checkUserInDatabase(storedName); // Verificar los permisos del usuario en la base de datos
+        } else {
+          console.warn("El nombre almacenado no coincide con el registrado en Firebase. Eliminando...");
+          localStorage.removeItem("userName");
+          document.getElementById("registro-container").classList.remove("hidden"); // Mostrar formulario de registro
+        }
+      } else {
+        console.warn("Nombre no encontrado en Firebase. Eliminando de localStorage...");
+        localStorage.removeItem("userName");
+        document.getElementById("registro-container").classList.remove("hidden"); // Mostrar formulario de registro
+      }
+    }).catch(error => {
+      console.error("Error al verificar el usuario en Firebase:", error);
+    });
   } else {
-    // Mostrar el contenedor de registro si no hay nombre almacenado
     document.getElementById("registro-container").classList.remove("hidden");
+  }
+});
+
+// Detectar eliminación de usuarios en Firebase y recargar la página
+usersRef.on("child_removed", snapshot => {
+  const removedUser = snapshot.val();
+  const storedName = localStorage.getItem("userName");
+
+  if (storedName && removedUser && storedName === removedUser.nombre) {
+    console.warn(`El usuario ${storedName} ha sido eliminado de Firebase. Recargando página...`);
+    localStorage.removeItem("userName");
+    window.location.reload(); // Recargar la página
+  } else {
+    console.warn("Un usuario fue eliminado, pero no afecta al actual.");
   }
 });
 
@@ -50,7 +88,7 @@ function checkUserInDatabase(name) {
       if (usuario.fase) {
         toggleButton.disabled = false;
         toggleButton.classList.remove("hidden");
-        document.getElementById("registro-container").classList.add("hidden"); // Ocultar contenedor de registro
+        document.getElementById("registro-container").classList.add("hidden"); // Ocultar formulario de registro
       } else {
         toggleButton.classList.remove("hidden");
         usersRef.child(name).on("value", snapshot => {
@@ -69,18 +107,17 @@ function checkUserInDatabase(name) {
         });
       }
     } else {
-      document.getElementById("registro-container").classList.remove("hidden"); // Mostrar contenedor de registro
+      document.getElementById("registro-container").classList.remove("hidden");
     }
   }).catch(error => {
     console.error("Error al verificar el registro del usuario:", error);
-    // Mostrar contenedor de registro en caso de error
     document.getElementById("registro-container").classList.remove("hidden");
   });
 }
 
 // Registrar usuario y almacenar el nombre en localStorage
 registerButton.addEventListener("click", () => {
-  const name = nameInput.value.trim(); // Eliminar espacios adicionales
+  const name = nameInput.value.trim();
 
   if (name) {
     usersRef.child(name).once("value").then(snapshot => {
@@ -93,8 +130,8 @@ registerButton.addEventListener("click", () => {
           fase: false,
           esAdmin: false
         }).then(() => {
-          // Guardar el nombre en localStorage
           localStorage.setItem("userName", name);
+          showUserName(name);
 
           if (confirm("Usuario registrado con éxito.")) {
             document.getElementById("registro-container").classList.add("hidden");

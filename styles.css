@@ -71,3 +71,13 @@ input, button {
 .hidden {
   display: none;
 }
+
+/* Estilos para el mensaje de bienvenida del usuario */
+#user-name-display {
+  margin-top: 20px;
+  font-size: 18px;
+  color: #333;
+}
+#user-name-display h3 {
+  margin: 0;
+}
