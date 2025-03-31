@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>ACP Admin</title>
+  <link rel="icon" href="image.png" type="image/png">
+  <link rel="stylesheet" href="AdminCSS.css">
+  <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-database.js"></script>
+</head>
+<body>
+  <div class="container">
+    <h1>Gestión de Usuarios</h1>
+    <h2 id="residence-name"></h2>
+    <div id="login-container">
+      <input type="text" id="admin-name" placeholder="Nombre del Administrador" required />
+      <button id="admin-login-button">Iniciar Sesión como Administrador</button>
+      <div id="error-message"></div>
+    </div>
+    <h2>Administradores</h2>
+    <div id="admin-list" style="display:none;"></div>
+    <h2>Usuarios</h2>
+    <div id="user-list" style="display:none;"></div>
+  </div>
+  <script src="AdminJS.js"></script>
+</body>
+</html>
